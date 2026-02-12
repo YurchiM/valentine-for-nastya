@@ -55,7 +55,7 @@ button {
 .heart { position: absolute; font-size: 24px; animation: float 4s linear infinite;}
 @keyframes float {0% { transform: translateY(100vh) scale(1); opacity: 1; } 100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }}
 
-@keyframes shake {0% { transform: translate(0, 0); } 20% { transform: translate(-5px, 0); } 40% { transform: translate(5px, 0); } 60% { transform: translate(-5px, 0); } 80% { transform: translate(5px, 0); } 100% { transform: translate(0, 0); }}
+@keyframes shake {0% { transform: translate(0, 0) rotate(0deg);} 20% { transform: translate(-5px, 0) rotate(-10deg);} 40% { transform: translate(5px, 0) rotate(10deg);} 60% { transform: translate(-5px, 0) rotate(-10deg);} 80% { transform: translate(5px, 0) rotate(10deg);} 100% { transform: translate(0, 0) rotate(0deg);}}
 
 .fade-in { opacity: 0; transition: opacity 2s ease-in; }
 .fade-in.show { opacity: 1; }
@@ -67,6 +67,12 @@ button {
     display: flex; justify-content: center; align-items: center;
     flex-direction: column; font-size: 48px;
     z-index: 100; text-align: center; color: #721c24;
+    overflow: hidden;
+}
+.fakeEmoji {
+    position: absolute;
+    font-size: 40px;
+    animation: shake 0.5s infinite;
 }
 </style>
 </head>
@@ -104,7 +110,8 @@ const thirdBlock = document.getElementById("thirdBlock");
 const hearts = document.getElementById("hearts");
 const loveSong = document.getElementById("loveSong");
 const emojis = ["❤️","💝","😘"];
-const noBtnInitial = {left:noBtn.style.left, top:noBtn.style.top};
+
+const noBtnDefault = {left: "auto", right: "20%", bottom: "20px"};
 let noBtnJumps = 0, maxJumps = 4;
 
 // Кнопка "Нет" прыгает максимум 4 раза, потом стоит
@@ -136,32 +143,32 @@ yesBtn.addEventListener("click", ()=>{
 noBtn.addEventListener("click", ()=>{
     initialBlock.classList.add("hidden");
     
-    // Первый шутливый блок
+    // Первый блок шутки
     const fake1 = document.createElement("div");
     fake1.classList.add("fakeBlock");
     fake1.style.background="#f8d7da";
     fake1.innerHTML = "Ты серьезно??";
     document.body.appendChild(fake1);
     startFakeEmojis(["😢","😿","😲","😵","😐","😑","🫨","💔"], fake1);
-    
+
     setTimeout(()=>{
         fake1.remove();
-        // Второй шутливый блок
+        // Второй блок шутки
         const fake2 = document.createElement("div");
         fake2.classList.add("fakeBlock");
         fake2.style.background="#fff3cd";
         fake2.innerHTML = "ахаххахаха<br>На шо ты надеялась??<br>У тебя нет такого выбора!";
         document.body.appendChild(fake2);
         startFakeEmojis(["🫵","🤣","😂","😹"], fake2);
-        
+
         setTimeout(()=>{
             fake2.remove();
             // Возврат на главный блок
             initialBlock.classList.remove("hidden");
             // Сбрасываем кнопку "Нет" на изначальное место
-            noBtn.style.left = "auto";
-            noBtn.style.right = "20%";
-            noBtn.style.bottom = "20px";
+            noBtn.style.left = noBtnDefault.left;
+            noBtn.style.right = noBtnDefault.right;
+            noBtn.style.bottom = noBtnDefault.bottom;
             noBtnJumps = 0;
         },5000);
     },5000);
@@ -180,17 +187,16 @@ function startHearts(){
     },100);
 }
 
-// Смайлики для блоков шутки
+// Смайлики для блока шутки — сразу на экране и трясутся
 function startFakeEmojis(arr,parent){
-    const interval = setInterval(()=>{
-        const e=document.createElement("div");
-        e.classList.add("heart");
-        e.innerHTML=arr[Math.floor(Math.random()*arr.length)];
-        e.style.left=Math.random()*parent.clientWidth+"px";
-        e.style.fontSize=(30+Math.random()*20)+"px";
-        parent.appendChild(e);
-        setTimeout(()=>e.remove(),5000);
-    },100);
+    arr.forEach(e=>{
+        const emoji = document.createElement("div");
+        emoji.classList.add("fakeEmoji");
+        emoji.innerHTML = e;
+        emoji.style.left = Math.random()*parent.clientWidth + "px";
+        emoji.style.top = Math.random()*parent.clientHeight + "px";
+        parent.appendChild(emoji);
+    });
 }
 </script>
 </body>
