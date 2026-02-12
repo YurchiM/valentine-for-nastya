@@ -53,6 +53,7 @@ button {
 #noBtn {
     background-color: #ccc;
     position: absolute;
+    transition: 0.2s;
 }
 
 .hidden {
@@ -94,6 +95,16 @@ button {
     0% { transform: translateY(100vh) scale(1); opacity: 1; }
     100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
 }
+
+/* Анимация тряски */
+@keyframes shake {
+    0% { transform: translate(0, 0); }
+    20% { transform: translate(-5px, 0); }
+    40% { transform: translate(5px, 0); }
+    60% { transform: translate(-5px, 0); }
+    80% { transform: translate(5px, 0); }
+    100% { transform: translate(0, 0); }
+}
 </style>
 </head>
 
@@ -112,12 +123,17 @@ button {
 
     <div class="gallery hidden" id="gallery">
         <!-- ВСТАВЬ СЮДА СВОИ ФОТО -->
-        <img src="photo1.jpg">
         <img src="photo2.jpg">
+        <img src="photo1.jpg">
     </div>
 </div>
 
 <div class="hearts" id="hearts"></div>
+
+<!-- Музыка -->
+<audio id="loveSong" loop>
+    <source src="music.mp3" type="audio/mpeg">
+</audio>
 
 <script>
 const yesBtn = document.getElementById("yesBtn");
@@ -125,13 +141,33 @@ const noBtn = document.getElementById("noBtn");
 const loveMessage = document.getElementById("loveMessage");
 const gallery = document.getElementById("gallery");
 const hearts = document.getElementById("hearts");
+const loveSong = document.getElementById("loveSong");
 
-// Кнопка "Нет" убегает
+let noBtnSize = 100; // изначальный размер кнопки в %
+const colors = ["#ccc", "#f28b82", "#fbbc04", "#34a853", "#4285f4"]; // цвета для кнопки
+
 noBtn.addEventListener("mouseover", () => {
-    const x = Math.random() * (window.innerWidth - 100);
-    const y = Math.random() * (window.innerHeight - 50);
+    // Уменьшаем кнопку при каждом наведении
+    noBtnSize = noBtnSize * 0.9;
+    if (noBtnSize < 20) noBtnSize = 20;
+    noBtn.style.width = noBtnSize + "px";
+    noBtn.style.height = noBtnSize / 2 + "px"; 
+
+    // Перемещаем кнопку
+    const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
+    const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
     noBtn.style.left = x + "px";
     noBtn.style.top = y + "px";
+
+    // Случайный цвет
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    noBtn.style.backgroundColor = color;
+
+    // Добавляем тряску
+    noBtn.style.animation = "shake 0.5s";
+    setTimeout(() => {
+        noBtn.style.animation = "";
+    }, 500);
 });
 
 // При нажатии "Да"
@@ -139,7 +175,8 @@ yesBtn.addEventListener("click", () => {
     loveMessage.classList.remove("hidden");
     gallery.classList.remove("hidden");
     startHearts();
-    setTimeout(showFinalMessage, 20000); // 20 секунд
+    loveSong.play();
+    setTimeout(showFinalMessage, 20000);
 });
 
 // Сердечки
@@ -162,12 +199,11 @@ function startHearts() {
 function showFinalMessage() {
     document.getElementById("main").innerHTML = `
         <h1>Навсегда твой, Настюша ❤️</h1>
-        <p>Солнышко любит тебя бесконечно 💕</p>
+        <p>Пупсик🤪 любит тебя бесконечно 💕</p>
     `;
+    loveSong.pause();
 }
 </script>
 
 </body>
 </html>
-
-
