@@ -50,7 +50,7 @@ button {
 .hidden { display: none; }
 #loveMessage { font-size: 26px; margin-top: 20px; color: #ff4d6d; }
 .gallery { margin-top: 20px; display: flex; justify-content: center; flex-wrap: wrap; }
-.gallery img { width: 150px; margin: 10px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); opacity:0; transition: opacity 1s ease-in-out; }
+.gallery img { width: 150px; margin: 10px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); opacity:1; transition: opacity 1s ease-in-out; }
 
 .fadeZoomImg { 
     max-width:90vw; max-height:90vh; border-radius:15px; 
@@ -105,7 +105,7 @@ button {
             <img src="photo1.jpg">
             <img src="photo2.jpg">
         </div>
-        <div class="gallery" id="newGallery" style="display:none; margin-top:20px; justify-content:center; flex-wrap:wrap;"></div>
+        <div class="gallery" id="newGallery" style="display:none; margin-top:20px;"></div>
     </div>
 
     <!-- Новый блок для показа больших фотографий -->
@@ -177,26 +177,29 @@ function showPhotosSequence(){
                     showNextPhoto();
                 } else {
                     photoShowBlock.classList.add("hidden");
-                    // добавляем все новые фото в подгалерею с эффектом fade-in
+                    // возвращаем loveBlock в исходное состояние с двумя фото
                     newGallery.style.display = "flex";
-                    newGallery.innerHTML = ""; 
-                    [...galleryPhotos, ...newPhotos].forEach((src, i) => {
+                    newGallery.innerHTML = "";
+                    newPhotos.forEach(src=>{
                         const img = document.createElement("img");
                         img.src = src;
                         img.style.opacity = 0;
-                        img.style.transition = "opacity 1s ease-in-out";
+                        img.style.margin = "10px";
+                        img.style.width = "150px";
+                        img.style.borderRadius = "15px";
+                        img.style.boxShadow = "0 5px 15px rgba(0,0,0,0.2)";
                         newGallery.appendChild(img);
-                        setTimeout(()=>{ img.style.opacity = 1; }, i * 500);
+                        setTimeout(()=>{ img.style.opacity = 1; }, 200);
                     });
                 }
-            }, 1000);
+            }, 500);
         }, displayTime);
     }
 
     showNextPhoto();
 }
 
-// Кнопка "Нет" — шутка с множеством смайликов вокруг текста
+// Кнопка "Нет" — шутка с множеством смайликов
 noBtn.addEventListener("click", ()=>{
     initialBlock.classList.add("hidden");
     
@@ -219,7 +222,6 @@ noBtn.addEventListener("click", ()=>{
         setTimeout(()=>{
             fake2.remove();
             initialBlock.classList.remove("hidden");
-            // Полный сброс кнопки "Нет" на исходное место
             noBtn.style.left = "auto";
             noBtn.style.top = "auto";
             noBtn.style.right = "20%";
@@ -242,7 +244,7 @@ function startHearts(){
     },100);
 }
 
-// Функция для большого количества смайликов на шутке
+// Функция для смайликов
 function startManyEmojis(arr,parent,count){
     for(let i=0;i<count;i++){
         const e = arr[Math.floor(Math.random()*arr.length)];
