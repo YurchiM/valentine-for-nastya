@@ -71,9 +71,22 @@ button {
     height: 60px;
 }
 
-.hidden {
+#musicBtn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    font-size: 18px;
+    background: #ff4d6d;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
     display: none;
+    z-index: 999;
 }
+
+.hidden { display: none; }
 
 #loveMessage {
     font-size: 26px;
@@ -124,7 +137,6 @@ button {
     100% { transform: translate(0, 0); }
 }
 
-/* Плавное появление третьего блока */
 .fade-in {
     opacity: 0;
     transition: opacity 2s ease-in;
@@ -170,6 +182,8 @@ button {
 
 <div class="hearts" id="hearts"></div>
 
+<button id="musicBtn">Включить музыку 🎵</button>
+
 <audio id="loveSong" loop>
     <source src="music.mp3" type="audio/mpeg">
 </audio>
@@ -182,6 +196,7 @@ const loveBlock = document.getElementById("loveBlock");
 const thirdBlock = document.getElementById("thirdBlock");
 const hearts = document.getElementById("hearts");
 const loveSong = document.getElementById("loveSong");
+const musicBtn = document.getElementById("musicBtn");
 
 let noBtnSize = 140;
 const colors = ["#ccc", "#f28b82", "#fbbc04", "#34a853", "#4285f4"];
@@ -210,25 +225,25 @@ noBtn.addEventListener("mouseover", () => {
 yesBtn.addEventListener("click", () => {
     initialBlock.classList.add("hidden");
     loveBlock.classList.remove("hidden");
-
     startHearts();
 
-    // Попробуем проиграть музыку после клика
-    try {
-        loveSong.play().catch(e => {
-            console.log("Автоплей заблокирован браузером, нужно кликнуть еще раз.");
-        });
-    } catch(e) {
-        console.log("Ошибка при воспроизведении:", e);
-    }
+    // Попытка включить музыку
+    loveSong.play().catch(() => {
+        // Если браузер блокирует автозапуск, покажем кнопку
+        musicBtn.style.display = "block";
+    });
 
-    // Показ третьего блока через 10 секунд с плавным появлением
     setTimeout(() => {
         thirdBlock.classList.remove("hidden");
         thirdBlock.classList.add("show");
     }, 10000);
 });
 
+// Кнопка включения музыки вручную
+musicBtn.addEventListener("click", () => {
+    loveSong.play();
+    musicBtn.style.display = "none";
+});
 
 // Летающие сердечки
 function startHearts() {
@@ -241,7 +256,7 @@ function startHearts() {
         hearts.appendChild(heart);
 
         setTimeout(() => heart.remove(), 4000);
-    }, 100); // больше сердечек
+    }, 100); 
 }
 </script>
 
