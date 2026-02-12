@@ -49,8 +49,9 @@ button {
 
 .hidden { display: none; }
 #loveMessage { font-size: 26px; margin-top: 20px; color: #ff4d6d; }
-.gallery { margin-top: 20px; display: flex; justify-content: center; flex-wrap: wrap;}
-.gallery img { width: 150px; margin: 10px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);}
+.gallery { margin-top: 20px; display: flex; justify-content: center; flex-wrap: wrap; }
+.gallery img { width: 150px; margin: 10px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); opacity:0; transition: opacity 1s ease-in-out; }
+
 .fadeZoomImg { 
     max-width:90vw; max-height:90vh; border-radius:15px; 
     box-shadow:0 5px 15px rgba(0,0,0,0.3); 
@@ -166,13 +167,11 @@ function showPhotosSequence(){
     function showNextPhoto(){
         photoShowBlock.innerHTML = `<img src="${newPhotos[index]}" class="fadeZoomImg">`;
         const img = photoShowBlock.querySelector("img");
-        // Плавное появление + zoom
         setTimeout(()=>{ img.style.opacity = 1; img.style.transform = "scale(1)"; },50);
 
         let displayTime = (index === newPhotos.length - 1) ? 3000 : 2000; // последняя фото 3 сек
 
         setTimeout(()=>{
-            // Плавное исчезновение + уменьшение
             img.style.opacity = 0; 
             img.style.transform = "scale(0.8)";
             setTimeout(()=>{
@@ -181,11 +180,19 @@ function showPhotosSequence(){
                     showNextPhoto();
                 } else {
                     photoShowBlock.classList.add("hidden");
-                    // добавляем все фото в подгалерею под loveBlock
-                    newGallery.innerHTML = newPhotos.map(src => `<img src="${src}">`).join("");
+                    // Плавное появление галереи под loveBlock
                     newGallery.style.display = "flex";
+                    newGallery.innerHTML = ""; // очистка на всякий случай
+                    newPhotos.forEach((src, i) => {
+                        const img = document.createElement("img");
+                        img.src = src;
+                        img.style.opacity = 0;
+                        img.style.transition = "opacity 1s ease-in-out";
+                        newGallery.appendChild(img);
+                        setTimeout(()=>{ img.style.opacity = 1; }, i * 500); // появление с задержкой
+                    });
                 }
-            }, 1000); // время на fade-out
+            }, 1000);
         }, displayTime);
     }
 
