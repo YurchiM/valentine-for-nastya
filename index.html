@@ -57,10 +57,6 @@ button {
 
 @keyframes shake {0% { transform: translate(0, 0) rotate(0deg);} 20% { transform: translate(-5px, 0) rotate(-10deg);} 40% { transform: translate(5px, 0) rotate(10deg);} 60% { transform: translate(-5px, 0) rotate(-10deg);} 80% { transform: translate(5px, 0) rotate(10deg);} 100% { transform: translate(0, 0) rotate(0deg);}}
 
-.fade-in { opacity: 0; transition: opacity 2s ease-in; }
-.fade-in.show { opacity: 1; }
-#thirdBlock { margin-top: 30px; font-size: 24px; color: #ff4d6d; }
-
 .fakeBlock {
     position: absolute;
     top:0; left:0; width:100%; height:100%;
@@ -69,10 +65,20 @@ button {
     z-index: 100; text-align: center; color: #721c24;
     overflow: hidden;
 }
+
+/* Анимация прыжка и вращения для смайликов шутки */
+@keyframes jumpRotate {
+    0% { transform: translateY(0) rotate(0deg); }
+    25% { transform: translateY(-20px) rotate(-15deg); }
+    50% { transform: translateY(0) rotate(15deg); }
+    75% { transform: translateY(-15px) rotate(-10deg); }
+    100% { transform: translateY(0) rotate(0deg); }
+}
+
 .fakeEmoji {
     position: absolute;
     font-size: 40px;
-    animation: shake 0.5s infinite;
+    animation: jumpRotate 1s infinite ease-in-out;
 }
 </style>
 </head>
@@ -154,50 +160,3 @@ noBtn.addEventListener("click", ()=>{
     setTimeout(()=>{
         fake1.remove();
         // Второй блок шутки
-        const fake2 = document.createElement("div");
-        fake2.classList.add("fakeBlock");
-        fake2.style.background="#fff3cd";
-        fake2.innerHTML = "ахаххахаха<br>На шо ты надеялась??<br>У тебя нет такого выбора!";
-        document.body.appendChild(fake2);
-        startFakeEmojis(["🫵","🤣","😂","😹"], fake2);
-
-        setTimeout(()=>{
-            fake2.remove();
-            // Возврат на главный блок
-            initialBlock.classList.remove("hidden");
-            // Сбрасываем кнопку "Нет" на изначальное место
-            noBtn.style.left = noBtnDefault.left;
-            noBtn.style.right = noBtnDefault.right;
-            noBtn.style.bottom = noBtnDefault.bottom;
-            noBtnJumps = 0;
-        },5000);
-    },5000);
-});
-
-// Летающие сердечки и смайлы
-function startHearts(){
-    setInterval(()=>{
-        const heart=document.createElement("div");
-        heart.classList.add("heart");
-        heart.innerHTML=emojis[Math.floor(Math.random()*emojis.length)];
-        heart.style.left=Math.random()*window.innerWidth+"px";
-        heart.style.fontSize=(20+Math.random()*30)+"px";
-        hearts.appendChild(heart);
-        setTimeout(()=>heart.remove(),4000);
-    },100);
-}
-
-// Смайлики для блока шутки — сразу на экране и трясутся
-function startFakeEmojis(arr,parent){
-    arr.forEach(e=>{
-        const emoji = document.createElement("div");
-        emoji.classList.add("fakeEmoji");
-        emoji.innerHTML = e;
-        emoji.style.left = Math.random()*parent.clientWidth + "px";
-        emoji.style.top = Math.random()*parent.clientHeight + "px";
-        parent.appendChild(emoji);
-    });
-}
-</script>
-</body>
-</html>
