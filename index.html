@@ -30,17 +30,8 @@ body {
     box-sizing: border-box;
 }
 
-h1 {
-    color: #ff4d6d;
-    font-size: 36px;
-    margin-bottom: 20px;
-}
-
-p {
-    font-size: 22px;
-    margin-bottom: 30px;
-}
-
+h1 { font-size: 36px; color: #ff4d6d; margin-bottom: 20px; }
+p { font-size: 22px; margin-bottom: 30px; }
 button {
     padding: 15px 30px;
     border: none;
@@ -53,73 +44,33 @@ button {
 
 #yesBtn { background-color: #ff4d6d; color: white; left: 20%; bottom: 20px; }
 #yesBtn:hover { background-color: #e63956; }
-
 #noBtn { background-color: #ccc; bottom: 20px; right: 20%; width: 140px; height: 60px; }
 
-#musicBtn {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 12px 20px;
-    font-size: 18px;
-    background: #ff4d6d;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    z-index: 999;
-    display: block;
-}
+#musicBtn { position: fixed; top: 20px; right: 20px; padding: 12px 20px; font-size: 18px;
+background: #ff4d6d; color: white; border: none; border-radius: 10px; cursor: pointer; z-index: 999; display: block;}
 
 .hidden { display: none; }
-
 #loveMessage { font-size: 26px; margin-top: 20px; color: #ff4d6d; }
+.gallery { margin-top: 20px; display: flex; justify-content: center; flex-wrap: wrap;}
+.gallery img { width: 150px; margin: 10px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);}
+.hearts { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 1;}
+.heart { position: absolute; font-size: 24px; animation: float 4s linear infinite;}
+@keyframes float {0% { transform: translateY(100vh) scale(1); opacity: 1; } 100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }}
 
-.gallery {
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.gallery img {
-    width: 150px;
-    margin: 10px;
-    border-radius: 15px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-}
-
-.hearts {
-    position: fixed;
-    top: 0;
-    left: 0;
-    pointer-events: none;
-    z-index: 1;
-}
-
-.heart {
-    position: absolute;
-    font-size: 24px;
-    animation: float 4s linear infinite;
-}
-
-@keyframes float {
-    0% { transform: translateY(100vh) scale(1); opacity: 1; }
-    100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
-}
-
-@keyframes shake {
-    0% { transform: translate(0, 0); }
-    20% { transform: translate(-5px, 0); }
-    40% { transform: translate(5px, 0); }
-    60% { transform: translate(-5px, 0); }
-    80% { transform: translate(5px, 0); }
-    100% { transform: translate(0, 0); }
-}
+@keyframes shake {0% { transform: translate(0, 0); } 20% { transform: translate(-5px, 0); } 40% { transform: translate(5px, 0); } 60% { transform: translate(-5px, 0); } 80% { transform: translate(5px, 0); } 100% { transform: translate(0, 0); }}
 
 .fade-in { opacity: 0; transition: opacity 2s ease-in; }
 .fade-in.show { opacity: 1; }
 #thirdBlock { margin-top: 30px; font-size: 24px; color: #ff4d6d; }
+
+.fakeBlock {
+    position: absolute;
+    top:0; left:0; width:100%; height:100%;
+    background: #f8d7da;
+    display: flex; justify-content: center; align-items: center;
+    flex-direction: column; color: #721c24; font-size: 48px;
+    z-index: 100; text-align: center;
+}
 </style>
 </head>
 <body>
@@ -133,9 +84,7 @@ button {
     </div>
 
     <div id="loveBlock" class="hidden">
-        <div id="loveMessage">
-            Я тебя люблю, Милая 🤍<br>Ты самое прекрасное, что случилось со мной 💕
-        </div>
+        <div id="loveMessage">Я тебя люблю, Милая 🤍<br>Ты самое прекрасное, что случилось со мной 💕</div>
         <div class="gallery" id="gallery">
             <img src="photo1.jpg">
             <img src="photo2.jpg">
@@ -148,10 +97,7 @@ button {
 
 <div class="hearts" id="hearts"></div>
 <button id="musicBtn">Включить музыку 🎵</button>
-
-<audio id="loveSong" loop>
-    <source src="music.mp3" type="audio/mpeg">
-</audio>
+<audio id="loveSong" loop><source src="music.mp3" type="audio/mpeg"></audio>
 
 <script>
 const yesBtn = document.getElementById("yesBtn");
@@ -162,58 +108,88 @@ const thirdBlock = document.getElementById("thirdBlock");
 const hearts = document.getElementById("hearts");
 const loveSong = document.getElementById("loveSong");
 const musicBtn = document.getElementById("musicBtn");
-
 const emojis = ["❤️","💝","😘"];
 
-// Кнопка "Нет" бегает и меняет цвет, размер фиксирован
-noBtn.addEventListener("mouseover", () => {
+// Кнопка "Нет" бегает и меняет цвет
+noBtn.addEventListener("mouseover", ()=>{
     const container = document.getElementById("main");
     const maxX = container.clientWidth - noBtn.offsetWidth - 20;
     const maxY = container.clientHeight - noBtn.offsetHeight - 20;
-    const x = Math.random() * maxX;
-    const y = Math.random() * maxY;
-    noBtn.style.left = x + "px";
-    noBtn.style.top = y + "px";
-
-    const colors = ["#ccc", "#f28b82", "#fbbc04", "#34a853", "#4285f4"];
+    noBtn.style.left = Math.random()*maxX + "px";
+    noBtn.style.top = Math.random()*maxY + "px";
+    const colors = ["#ccc","#f28b82","#fbbc04","#34a853","#4285f4"];
     noBtn.style.backgroundColor = colors[Math.floor(Math.random()*colors.length)];
-
     noBtn.style.animation = "shake 0.5s";
-    setTimeout(()=>{noBtn.style.animation = "";},500);
+    setTimeout(()=>{noBtn.style.animation="";},500);
 });
 
-// Кнопка "Да" открывает второй блок и запускает музыку
+// Нажатие на "Да"
 yesBtn.addEventListener("click", ()=>{
     initialBlock.classList.add("hidden");
     loveBlock.classList.remove("hidden");
     startHearts();
-
     loveSong.play().catch(()=>musicBtn.style.display="block");
+    setTimeout(()=>{ thirdBlock.classList.remove("hidden"); thirdBlock.classList.add("show"); },10000);
+});
 
+// Нажатие на "Нет" — шутка
+noBtn.addEventListener("click", ()=>{
+    initialBlock.classList.add("hidden");
+    // 1 блок "Ты серьезно??"
+    const fake1 = document.createElement("div");
+    fake1.classList.add("fakeBlock");
+    fake1.style.background="#f8d7da";
+    fake1.innerHTML = "Ты серьезно??";
+    document.body.appendChild(fake1);
+    startFakeEmojis(["😢","😿","😲","😵","😐","😑","🫨","💔"], fake1);
     setTimeout(()=>{
-        thirdBlock.classList.remove("hidden");
-        thirdBlock.classList.add("show");
-    },10000);
+        fake1.remove();
+        // 2 блок "ахаххахаха На шо ты надеялась?? У тебя нет такого выбора!"
+        const fake2 = document.createElement("div");
+        fake2.classList.add("fakeBlock");
+        fake2.style.background="#fff3cd";
+        fake2.innerHTML = "ахаххахаха<br>На шо ты надеялась??<br>У тебя нет такого выбора!";
+        document.body.appendChild(fake2);
+        startFakeEmojis(["🫵","🤣","😂","😹"], fake2);
+        setTimeout(()=>{
+            fake2.remove();
+            // Возврат на главный блок
+            initialBlock.classList.remove("hidden");
+        },4000);
+    },3000);
 });
 
-// Ручное включение музыки
-musicBtn.addEventListener("click", ()=>{
-    loveSong.play();
-    musicBtn.style.display="none";
-});
-
-// Летающие сердечки и смайлы
+// Запуск летающих сердечек
 function startHearts(){
     setInterval(()=>{
-        const heart = document.createElement("div");
+        const heart=document.createElement("div");
         heart.classList.add("heart");
-        heart.innerHTML = emojis[Math.floor(Math.random()*emojis.length)];
-        heart.style.left = Math.random()*window.innerWidth + "px";
-        heart.style.fontSize = (20+Math.random()*30)+"px";
+        heart.innerHTML=emojis[Math.floor(Math.random()*emojis.length)];
+        heart.style.left=Math.random()*window.innerWidth+"px";
+        heart.style.fontSize=(20+Math.random()*30)+"px";
         hearts.appendChild(heart);
         setTimeout(()=>heart.remove(),4000);
     },100);
 }
+
+// Для блока шутки — летающие трясущиеся смайлы
+function startFakeEmojis(arr,parent){
+    const interval = setInterval(()=>{
+        const e=document.createElement("div");
+        e.classList.add("heart");
+        e.innerHTML=arr[Math.floor(Math.random()*arr.length)];
+        e.style.left=Math.random()*parent.clientWidth+"px";
+        e.style.fontSize=(30+Math.random()*20)+"px";
+        parent.appendChild(e);
+        setTimeout(()=>e.remove(),3000);
+    },100);
+}
+
+// Кнопка включения музыки
+musicBtn.addEventListener("click", ()=>{
+    loveSong.play();
+    musicBtn.style.display="none";
+});
 </script>
 </body>
 </html>
