@@ -124,6 +124,16 @@ button {
     100% { transform: translate(0, 0); }
 }
 
+/* Плавное появление третьего блока */
+.fade-in {
+    opacity: 0;
+    transition: opacity 2s ease-in;
+}
+
+.fade-in.show {
+    opacity: 1;
+}
+
 #thirdBlock {
     margin-top: 30px;
     font-size: 24px;
@@ -151,7 +161,7 @@ button {
             <img src="photo1.jpg">
             <img src="photo2.jpg">
         </div>
-        <div id="thirdBlock" class="hidden">
+        <div id="thirdBlock" class="fade-in hidden">
             Навсегда твой, Настюша ❤️<br>
             Пупсик🤪 любит тебя бесконечно 💕
         </div>
@@ -176,14 +186,13 @@ const loveSong = document.getElementById("loveSong");
 let noBtnSize = 140;
 const colors = ["#ccc", "#f28b82", "#fbbc04", "#34a853", "#4285f4"];
 
+// Кнопка "Нет" бегает внутри контейнера
 noBtn.addEventListener("mouseover", () => {
-    // Уменьшение кнопки
     noBtnSize *= 0.9;
     if (noBtnSize < 70) noBtnSize = 70;
     noBtn.style.width = noBtnSize + "px";
     noBtn.style.height = (noBtnSize / 2) + "px";
 
-    // Движение внутри контейнера
     const container = document.getElementById("main");
     const maxX = container.clientWidth - noBtn.offsetWidth - 20;
     const maxY = container.clientHeight - noBtn.offsetHeight - 20;
@@ -192,7 +201,6 @@ noBtn.addEventListener("mouseover", () => {
     noBtn.style.left = x + "px";
     noBtn.style.top = y + "px";
 
-    // Цвет и тряска
     noBtn.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
     noBtn.style.animation = "shake 0.5s";
     setTimeout(() => { noBtn.style.animation = ""; }, 500);
@@ -204,14 +212,25 @@ yesBtn.addEventListener("click", () => {
     loveBlock.classList.remove("hidden");
 
     startHearts();
-    loveSong.play();
 
+    // Попробуем проиграть музыку после клика
+    try {
+        loveSong.play().catch(e => {
+            console.log("Автоплей заблокирован браузером, нужно кликнуть еще раз.");
+        });
+    } catch(e) {
+        console.log("Ошибка при воспроизведении:", e);
+    }
+
+    // Показ третьего блока через 10 секунд с плавным появлением
     setTimeout(() => {
         thirdBlock.classList.remove("hidden");
-    }, 10000); // показываем третий блок через 10 секунд
+        thirdBlock.classList.add("show");
+    }, 10000);
 });
 
-// Сердечки
+
+// Летающие сердечки
 function startHearts() {
     setInterval(() => {
         const heart = document.createElement("div");
@@ -222,7 +241,7 @@ function startHearts() {
         hearts.appendChild(heart);
 
         setTimeout(() => heart.remove(), 4000);
-    }, 100); // увеличено количество сердечек
+    }, 100); // больше сердечек
 }
 </script>
 
