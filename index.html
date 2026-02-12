@@ -51,6 +51,7 @@ button {
 #loveMessage { font-size: 26px; margin-top: 20px; color: #ff4d6d; }
 .gallery { margin-top: 20px; display: flex; justify-content: center; flex-wrap: wrap;}
 .gallery img { width: 150px; margin: 10px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);}
+.fadeImg { max-width:90vw; max-height:90vh; border-radius:15px; box-shadow:0 5px 15px rgba(0,0,0,0.3); opacity:0; transition: opacity 1s ease-in-out; }
 .hearts { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 1;}
 .heart { position: absolute; font-size: 24px; animation: float 4s linear infinite;}
 @keyframes float {0% { transform: translateY(100vh) scale(1); opacity: 1; } 100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }}
@@ -121,7 +122,7 @@ const emojis = ["❤️","💝","😘"];
 
 const photoShowBlock = document.getElementById("photoShowBlock");
 const newGallery = document.getElementById("newGallery");
-const newPhotos = ["new1.jpg","new2.jpg","new3.jpg","new4.jpg"];
+const newPhotos = ["new1.jpg","new2.jpg","new3.jpg"];
 
 const noBtnDefault = {left: "auto", right: "20%", bottom: "20px"};
 let noBtnJumps = 0, maxJumps = 4;
@@ -158,17 +159,27 @@ function showPhotosSequence(){
     let index = 0;
 
     function showNextPhoto(){
-        photoShowBlock.innerHTML = `<img src="${newPhotos[index]}" style="max-width:90vw; max-height:90vh; border-radius:15px; box-shadow:0 5px 15px rgba(0,0,0,0.3);">`;
-        index++;
-        if(index < newPhotos.length){
-            setTimeout(showNextPhoto, 2000); // каждая фото 2 сек
-        } else {
-            // после последней фото скрываем блок
-            photoShowBlock.classList.add("hidden");
-            // добавляем все фото в подгалерею под loveBlock
-            newGallery.innerHTML = newPhotos.map(src => `<img src="${src}">`).join("");
-            newGallery.style.display = "flex";
-        }
+        photoShowBlock.innerHTML = `<img src="${newPhotos[index]}" class="fadeImg">`;
+        const img = photoShowBlock.querySelector("img");
+        // Плавное появление
+        setTimeout(()=>{ img.style.opacity = 1; },50);
+
+        let displayTime = (index === newPhotos.length - 1) ? 3000 : 2000; // последняя фото 3 сек
+
+        setTimeout(()=>{
+            img.style.opacity = 0; // плавное исчезновение
+            setTimeout(()=>{
+                index++;
+                if(index < newPhotos.length){
+                    showNextPhoto();
+                } else {
+                    photoShowBlock.classList.add("hidden");
+                    // добавляем все фото в подгалерею под loveBlock
+                    newGallery.innerHTML = newPhotos.map(src => `<img src="${src}">`).join("");
+                    newGallery.style.display = "flex";
+                }
+            }, 1000); // время на fade-out
+        }, displayTime);
     }
 
     showNextPhoto();
@@ -225,7 +236,6 @@ function startManyEmojis(arr,parent,count){
         const emoji = document.createElement("div");
         emoji.classList.add("fakeEmoji");
         emoji.innerHTML = e;
-        // Распределяем вокруг текста (верх/низ/боковые стороны)
         let x = Math.random()*(parent.clientWidth-50);
         let y = Math.random()*(parent.clientHeight-50);
         if(y > parent.clientHeight*0.35 && y < parent.clientHeight*0.65){
@@ -242,4 +252,3 @@ function startManyEmojis(arr,parent,count){
 </script>
 </body>
 </html>
-
