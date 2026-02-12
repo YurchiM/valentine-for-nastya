@@ -98,9 +98,7 @@ button {
             <img src="photo1.jpg">
             <img src="photo2.jpg">
         </div>
-        <div id="thirdBlock" class="fade-in hidden">
-            Навсегда твой, Настюша ❤️<br>Пупсик🤪 любит тебя бесконечно 💕
-        </div>
+        
     </div>
 </div>
 
@@ -142,7 +140,7 @@ yesBtn.addEventListener("click", ()=>{
     loveBlock.classList.remove("hidden");
     startHearts();
     loveSong.play().catch(()=>console.log("Музыка заблокирована браузером"));
-    setTimeout(()=>{ thirdBlock.classList.remove("hidden"); thirdBlock.classList.add("show"); },10000);
+   
 });
 
 // Кнопка "Нет" — шутка с множеством смайликов вокруг текста
@@ -214,3 +212,4 @@ function startManyEmojis(arr,parent,count){
 </script>
 </body>
 </html>
+
