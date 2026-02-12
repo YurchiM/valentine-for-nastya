@@ -98,8 +98,13 @@ button {
             <img src="photo1.jpg">
             <img src="photo2.jpg">
         </div>
-        
     </div>
+
+    <!-- Новый блок для показа больших фотографий -->
+    <div id="photoShowBlock" class="hidden" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:101;"></div>
+
+    <!-- Галерея новых фотографий под loveBlock -->
+    <div class="gallery" id="newGallery" style="display:none; margin-top:20px; justify-content:center; flex-wrap:wrap;"></div>
 </div>
 
 <div class="hearts" id="hearts"></div>
@@ -110,10 +115,13 @@ const yesBtn = document.getElementById("yesBtn");
 const noBtn = document.getElementById("noBtn");
 const initialBlock = document.getElementById("initialBlock");
 const loveBlock = document.getElementById("loveBlock");
-const thirdBlock = document.getElementById("thirdBlock");
 const hearts = document.getElementById("hearts");
 const loveSong = document.getElementById("loveSong");
 const emojis = ["❤️","💝","😘"];
+
+const photoShowBlock = document.getElementById("photoShowBlock");
+const newGallery = document.getElementById("newGallery");
+const newPhotos = ["photo3.jpg","photo4.jpg","photo5.jpg","photo6.jpg"];
 
 const noBtnDefault = {left: "auto", right: "20%", bottom: "20px"};
 let noBtnJumps = 0, maxJumps = 4;
@@ -140,8 +148,31 @@ yesBtn.addEventListener("click", ()=>{
     loveBlock.classList.remove("hidden");
     startHearts();
     loveSong.play().catch(()=>console.log("Музыка заблокирована браузером"));
-   
+
+    // через 5 секунд запускаем показ больших фото
+    setTimeout(()=>{ showPhotosSequence(); },5000);
 });
+
+function showPhotosSequence(){
+    photoShowBlock.classList.remove("hidden");
+    let index = 0;
+
+    function showNextPhoto(){
+        photoShowBlock.innerHTML = `<img src="${newPhotos[index]}" style="max-width:90vw; max-height:90vh; border-radius:15px; box-shadow:0 5px 15px rgba(0,0,0,0.3);">`;
+        index++;
+        if(index < newPhotos.length){
+            setTimeout(showNextPhoto, 2000); // каждая фото 2 сек
+        } else {
+            // после последней фото скрываем блок
+            photoShowBlock.classList.add("hidden");
+            // добавляем все фото в подгалерею под loveBlock
+            newGallery.innerHTML = newPhotos.map(src => `<img src="${src}">`).join("");
+            newGallery.style.display = "flex";
+        }
+    }
+
+    showNextPhoto();
+}
 
 // Кнопка "Нет" — шутка с множеством смайликов вокруг текста
 noBtn.addEventListener("click", ()=>{
@@ -197,7 +228,6 @@ function startManyEmojis(arr,parent,count){
         // Распределяем вокруг текста (верх/низ/боковые стороны)
         let x = Math.random()*(parent.clientWidth-50);
         let y = Math.random()*(parent.clientHeight-50);
-        // Не перекрываем центральную область (текст)
         if(y > parent.clientHeight*0.35 && y < parent.clientHeight*0.65){
             y += parent.clientHeight*0.35;
             if(y>parent.clientHeight-50) y=parent.clientHeight-50;
@@ -212,4 +242,3 @@ function startManyEmojis(arr,parent,count){
 </script>
 </body>
 </html>
-
