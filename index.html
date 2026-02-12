@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -24,7 +25,7 @@ body {
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     width: 90%;
     max-width: 700px;
-    min-height: 500px;
+    min-height: 450px;
     position: relative;
     text-align: center;
     box-sizing: border-box;
@@ -48,47 +49,22 @@ button {
 #noBtn { background-color: #ccc; bottom: 20px; right: 20%; width: 140px; height: 60px; }
 
 .hidden { display: none; }
-
 #loveMessage { font-size: 26px; margin-top: 20px; color: #ff4d6d; }
 
 .gallery {
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
     position: relative;
-    height: 200px;
+    margin-top: 20px;
+    height: 350px;
+    overflow: hidden;
 }
 
 .gallery img {
     width: 150px;
-    margin: 10px;
-    border-radius: 15px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    opacity: 0;
-    position: absolute;
-    transition: all 0.5s ease;
-}
-
-#collageContainer {
-    position: relative;
-    width: 100%;
-    height: 300px;
-    margin-top: 30px;
-    overflow: hidden;
-}
-
-#collageContainer img {
-    width: 100%;
-    max-height: 300px;
     border-radius: 15px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     position: absolute;
-    top: 0;
-    left: 0;
     opacity: 0;
-    transition: all 0.5s ease;
-    object-fit: cover;
+    transition: all 1.5s ease;
 }
 
 .hearts { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 1;}
@@ -97,11 +73,13 @@ button {
 
 @keyframes shake {0% { transform: translate(0, 0) rotate(0deg);} 20% { transform: translate(-5px, 0) rotate(-10deg);} 40% { transform: translate(5px, 0) rotate(10deg);} 60% { transform: translate(-5px, 0) rotate(-10deg);} 80% { transform: translate(5px, 0) rotate(10deg);} 100% { transform: translate(0, 0) rotate(0deg);}}
 
-.fakeEmoji {
+.fakeBlock {
     position: absolute;
-    font-size: 40px;
-    animation: jumpRotate 1s infinite ease-in-out;
-    pointer-events: none;
+    top:0; left:0; width:100%; height:100%;
+    display: flex; justify-content: center; align-items: center;
+    flex-direction: column; font-size: 48px;
+    z-index: 100; text-align: center; color: #721c24;
+    overflow: hidden;
 }
 
 @keyframes jumpRotate {
@@ -110,6 +88,13 @@ button {
     50% { transform: translateY(0) rotate(15deg); }
     75% { transform: translateY(-15px) rotate(-10deg); }
     100% { transform: translateY(0) rotate(0deg); }
+}
+
+.fakeEmoji {
+    position: absolute;
+    font-size: 40px;
+    animation: jumpRotate 1s infinite ease-in-out;
+    pointer-events: none;
 }
 </style>
 </head>
@@ -128,12 +113,14 @@ button {
         <div class="gallery" id="gallery">
             <img src="photo1.jpg">
             <img src="photo2.jpg">
+            <img src="photo3.jpg">
+            <img src="photo4.jpg">
         </div>
-        <div id="collageContainer"></div>
     </div>
 </div>
 
 <div class="hearts" id="hearts"></div>
+<audio id="loveSong" loop><source src="music.mp3" type="audio/mpeg"></audio>
 
 <script>
 const yesBtn = document.getElementById("yesBtn");
@@ -141,17 +128,13 @@ const noBtn = document.getElementById("noBtn");
 const initialBlock = document.getElementById("initialBlock");
 const loveBlock = document.getElementById("loveBlock");
 const gallery = document.getElementById("gallery");
-const collageContainer = document.getElementById("collageContainer");
-const mainContainer = document.getElementById("main");
-
-let noBtnJumps = 0, maxJumps = 4;
+const hearts = document.getElementById("hearts");
+const loveSong = document.getElementById("loveSong");
+const emojis = ["❤️","💝","😘"];
 const noBtnDefault = {left: "auto", right: "20%", bottom: "20px"};
+let noBtnJumps = 0, maxJumps = 4;
 
-// Трясущиеся смайлики для шутки
-const firstJokeEmojis = ["😢","😿","😲","😵","😐","😑","🫨","💔"];
-const secondJokeEmojis = ["🫵","🤣","😂","😹"];
-
-// Кнопка «Нет» прыгает максимум 4 раза
+// Кнопка "Нет" прыгает максимум 4 раза
 noBtn.addEventListener("mouseover", ()=>{
     if(noBtnJumps < maxJumps){
         const container = document.getElementById("main");
@@ -167,121 +150,88 @@ noBtn.addEventListener("mouseover", ()=>{
     }
 });
 
-// Функция для создания трясущихся смайликов на экране
-function showEmojis(emojisArray){
-    const created = [];
-    emojisArray.forEach(e=>{
-        for(let i=0;i<10;i++){
-            const span = document.createElement("div");
-            span.className="fakeEmoji";
-            span.innerText=e;
-            span.style.left = Math.random()*80 + "%";
-            span.style.top = Math.random()*80 + "%";
-            mainContainer.appendChild(span);
-            created.push(span);
-        }
+// Кнопка "Да"
+yesBtn.addEventListener("click", ()=>{
+    initialBlock.classList.add("hidden");
+    loveBlock.classList.remove("hidden");
+    startHearts();
+    loveSong.play().catch(()=>console.log("Музыка заблокирована браузером"));
+    // Коллаж из фотографий всплывает постепенно
+    const imgs = gallery.querySelectorAll("img");
+    imgs.forEach((img,i)=>{
+        setTimeout(()=>{
+            img.style.opacity = 1;
+            img.style.top = (Math.random()*200)+"px";
+            img.style.left = (i*160 + 20) + "px";
+        }, i*500);
     });
-    return created;
-}
+});
 
-// Убираем смайлики
-function removeEmojis(spans){
-    spans.forEach(s=>s.remove());
-}
-
-// Кнопка «Нет» — шутка
+// Кнопка "Нет" — шутка
 noBtn.addEventListener("click", ()=>{
     initialBlock.classList.add("hidden");
-
-    // Первый блок шутки
-    const firstBlock = document.createElement("div");
-    firstBlock.style.fontSize = "32px";
-    firstBlock.style.color = "#ff4d6d";
-    firstBlock.innerText = "Ты серьёзно??";
-    mainContainer.appendChild(firstBlock);
-
-    const emojis1 = showEmojis(firstJokeEmojis);
+    const fake1 = document.createElement("div");
+    fake1.classList.add("fakeBlock");
+    fake1.style.background="#f8d7da";
+    fake1.innerHTML = "Ты серьезно??";
+    document.body.appendChild(fake1);
+    startManyEmojis(["😢","😿","😲","😵","😐","😑","🫨","💔"], fake1, 50);
 
     setTimeout(()=>{
-        firstBlock.remove();
-        removeEmojis(emojis1);
-
-        // Второй блок шутки
-        const secondBlock = document.createElement("div");
-        secondBlock.style.fontSize = "32px";
-        secondBlock.style.color = "#ff4d6d";
-        secondBlock.innerText = "Ахаххахаха На шо ты надеялась?? У тебя нет такого выбора!";
-        mainContainer.appendChild(secondBlock);
-
-        const emojis2 = showEmojis(secondJokeEmojis);
+        fake1.remove();
+        const fake2 = document.createElement("div");
+        fake2.classList.add("fakeBlock");
+        fake2.style.background="#fff3cd";
+        fake2.innerHTML = "ахаххахаха<br>На шо ты надеялась??<br>У тебя нет такого выбора!";
+        document.body.appendChild(fake2);
+        startManyEmojis(["🫵","🤣","😂","😹"], fake2, 50);
 
         setTimeout(()=>{
-            secondBlock.remove();
-            removeEmojis(emojis2);
-
-            // Возвращаем исходный блок
+            fake2.remove();
             initialBlock.classList.remove("hidden");
             noBtn.style.left = noBtnDefault.left;
             noBtn.style.right = noBtnDefault.right;
             noBtn.style.bottom = noBtnDefault.bottom;
             noBtnJumps = 0;
-
         },5000);
-
     },5000);
 });
 
-// Кнопка «Да»
-yesBtn.addEventListener("click", ()=>{
-    initialBlock.classList.add("hidden");
-    loveBlock.classList.remove("hidden");
+// Летающие сердечки
+function startHearts(){
+    setInterval(()=>{
+        const heart=document.createElement("div");
+        heart.classList.add("heart");
+        heart.innerHTML=emojis[Math.floor(Math.random()*emojis.length)];
+        heart.style.left=Math.random()*window.innerWidth+"px";
+        heart.style.fontSize=(20+Math.random()*30)+"px";
+        hearts.appendChild(heart);
+        setTimeout(()=>heart.remove(),4000);
+    },100);
+}
 
-    // Показываем 2 фотографии второго блока
-    const imgs = gallery.querySelectorAll("img");
-    imgs.forEach((img,i)=>{
-        setTimeout(()=>{
-            img.style.opacity = 1;
-            img.style.top = (i*20) + "px";
-            img.style.left = (i*160 + 20) + "px";
-        }, i*500);
-    });
-
-    // Через 5 секунд запускаем последовательный показ новых 4 фотографий
-    setTimeout(()=>{
-        const newPhotos = ["new1.jpg","new2.jpg","new3.jpg","new4.jpg"];
-        let index = 0;
-
-        function showNextPhoto(){
-            if(index >= newPhotos.length) {
-                // После всех фото фиксируем их внизу
-                newPhotos.forEach((src,i)=>{
-                    const img = document.createElement("img");
-                    img.src = src;
-                    img.style.opacity = 1;
-                    img.style.position = "relative";
-                    img.style.top = "0px";
-                    img.style.left = (i*140)+"px";
-                    collageContainer.appendChild(img);
-                });
-                return;
-            }
-
-            const img = document.createElement("img");
-            img.src = newPhotos[index];
-            collageContainer.appendChild(img);
-            img.style.opacity = 1;
-
-            setTimeout(()=>{
-                img.style.opacity = 0;
-                index++;
-                setTimeout(showNextPhoto, 500);
-            }, 2500);
+// Много смайликов на шутке
+function startManyEmojis(arr,parent,count){
+    for(let i=0;i<count;i++){
+        const e = arr[Math.floor(Math.random()*arr.length)];
+        const emoji = document.createElement("div");
+        emoji.classList.add("fakeEmoji");
+        emoji.innerHTML = e;
+        let x = Math.random()*(parent.clientWidth-50);
+        let y = Math.random()*(parent.clientHeight-50);
+        if(y > parent.clientHeight*0.35 && y < parent.clientHeight*0.65){
+            y += parent.clientHeight*0.35;
+            if(y>parent.clientHeight-50) y=parent.clientHeight-50;
         }
-
-        showNextPhoto();
-
-    },5000);
-});
+        emoji.style.left = x + "px";
+        emoji.style.top = y + "px";
+        emoji.style.fontSize = (20 + Math.random()*30)+"px";
+        emoji.style.animationDuration = (0.8 + Math.random()*0.7)+"s";
+        parent.appendChild(emoji);
+    }
+}
 </script>
 </body>
 </html>
+
+.
