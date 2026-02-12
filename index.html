@@ -219,14 +219,17 @@ noBtn.addEventListener("click", ()=>{
         document.body.appendChild(fake2);
         startManyEmojis(["🫵","🤣","😂","😹"], fake2, 50);
 
-        setTimeout(()=>{
-            fake2.remove();
-            initialBlock.classList.remove("hidden");
-            noBtn.style.left = noBtnDefault.left;
-            noBtn.style.right = noBtnDefault.right;
-            noBtn.style.bottom = noBtnDefault.bottom;
-            noBtnJumps = 0;
-        },5000);
+      setTimeout(()=>{
+    fake2.remove();
+    initialBlock.classList.remove("hidden");
+    // Сбрасываем кнопку на исходное место
+    noBtn.style.left = "auto";
+    noBtn.style.top = "auto";
+    noBtn.style.right = "20%";
+    noBtn.style.bottom = "20px";
+    noBtnJumps = 0;
+},5000);
+
     },5000);
 });
 
@@ -266,3 +269,4 @@ function startManyEmojis(arr,parent,count){
 </script>
 </body>
 </html>
+
