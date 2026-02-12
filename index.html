@@ -67,22 +67,28 @@ button {
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     opacity: 0;
     position: absolute;
-    transition: all 1s ease;
+    transition: all 0.5s ease;
 }
 
-#collage {
-    margin-top: 30px;
-    height: 250px;
+#collageContainer {
     position: relative;
+    width: 100%;
+    height: 300px;
+    margin-top: 30px;
+    overflow: hidden;
 }
 
-#collage img {
-    width: 120px;
+#collageContainer img {
+    width: 100%;
+    max-height: 300px;
     border-radius: 15px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     position: absolute;
+    top: 0;
+    left: 0;
     opacity: 0;
-    transition: all 1s ease;
+    transition: all 0.5s ease;
+    object-fit: cover;
 }
 
 .hearts { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 1;}
@@ -123,7 +129,7 @@ button {
             <img src="photo1.jpg">
             <img src="photo2.jpg">
         </div>
-        <div id="collage"></div>
+        <div id="collageContainer"></div>
     </div>
 </div>
 
@@ -135,11 +141,16 @@ const noBtn = document.getElementById("noBtn");
 const initialBlock = document.getElementById("initialBlock");
 const loveBlock = document.getElementById("loveBlock");
 const gallery = document.getElementById("gallery");
-const collage = document.getElementById("collage");
+const collageContainer = document.getElementById("collageContainer");
 const hearts = document.getElementById("hearts");
-const emojis = ["❤️","💝","😘"];
-const noBtnDefault = {left: "auto", right: "20%", bottom: "20px"};
+
 let noBtnJumps = 0, maxJumps = 4;
+
+// Кнопка "Нет" с шуткой
+noBtn.addEventListener("click", ()=>{
+    // Шутка можно добавить здесь
+    alert("Ха-ха, шутка!"); // временный блок
+});
 
 // Кнопка "Нет" прыгает максимум 4 раза
 noBtn.addEventListener("mouseover", ()=>{
@@ -172,37 +183,40 @@ yesBtn.addEventListener("click", ()=>{
         }, i*500);
     });
 
-    // Через 5 секунд запускаем коллаж с 4 новыми фотографиями
+    // Через 5 секунд запускаем последовательный показ новых 4 фотографий
     setTimeout(()=>{
-        const newPhotos = ["new1.jpg","new2.jpg","new3.jpg","new4.jpg"]; // новые фото
-        newPhotos.forEach((src,i)=>{
+        const newPhotos = ["new1.jpg","new2.jpg","new3.jpg","new4.jpg"];
+        let index = 0;
+
+        function showNextPhoto(){
+            if(index >= newPhotos.length) {
+                // После всех фото фиксируем их внизу
+                newPhotos.forEach((src,i)=>{
+                    const img = document.createElement("img");
+                    img.src = src;
+                    img.style.opacity = 1;
+                    img.style.position = "relative";
+                    img.style.top = "0px";
+                    img.style.left = (i*140)+"px";
+                    collageContainer.appendChild(img);
+                });
+                return;
+            }
+
             const img = document.createElement("img");
-            img.src = src;
-            collage.appendChild(img);
+            img.src = newPhotos[index];
+            collageContainer.appendChild(img);
+            img.style.opacity = 1;
 
-            // Всплывает по очереди
-            setTimeout(()=>{
-                img.style.opacity = 1;
-                img.style.top = (Math.random()*150) + "px";
-                img.style.left = (i*130) + "px";
-            }, i*1000);
-
-            // Исчезает после показа
             setTimeout(()=>{
                 img.style.opacity = 0;
-            }, (i+1)*2500);
-        });
+                index++;
+                setTimeout(showNextPhoto, 500); // плавный переход к следующему фото
+            }, 2500);
+        }
 
-        // После просмотра всех фото фиксируем их внизу под вторым блоком
-        setTimeout(()=>{
-            const imgsFinal = collage.querySelectorAll("img");
-            imgsFinal.forEach((img,i)=>{
-                img.style.opacity = 1;
-                img.style.position = "relative";
-                img.style.top = "0px";
-                img.style.left = (i*140)+"px";
-            });
-        }, newPhotos.length*2500);
+        showNextPhoto();
+
     },5000);
 });
 </script>
