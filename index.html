@@ -245,22 +245,25 @@ musicBtn.addEventListener("click", () => {
     musicBtn.style.display = "none";
 });
 
-// Летающие сердечки
+// Летающие сердечки и смайлы
 function startHearts() {
+    const emojis = ["❤️", "💝", "😘"]; // набор символов для фона
     setInterval(() => {
         const heart = document.createElement("div");
         heart.classList.add("heart");
-        heart.innerHTML = "❤️💝😘";
+        heart.innerHTML = emojis[Math.floor(Math.random() * emojis.length)]; // случайный выбор
         heart.style.left = Math.random() * window.innerWidth + "px";
         heart.style.fontSize = (20 + Math.random() * 30) + "px";
         hearts.appendChild(heart);
 
         setTimeout(() => heart.remove(), 4000);
-    }, 100); 
+    }, 100); // каждые 0.1 сек создаётся новый
 }
+
 </script>
 
 </body>
 </html>
+
 
 
