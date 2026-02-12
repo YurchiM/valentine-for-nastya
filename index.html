@@ -20,32 +20,43 @@ body {
 
 .container {
     background: white;
-    padding: 40px;
+    padding: 50px 30px;
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     width: 90%;
-    max-width: 600px;
-    min-height: 300px;
+    max-width: 700px;
+    min-height: 400px;
     position: relative;
+    text-align: center;
+    box-sizing: border-box;
 }
 
 h1 {
     color: #ff4d6d;
+    font-size: 36px;
+    margin-bottom: 20px;
+}
+
+p {
+    font-size: 22px;
+    margin-bottom: 30px;
 }
 
 button {
-    padding: 12px 25px;
-    margin: 15px;
+    padding: 15px 30px;
     border: none;
-    border-radius: 10px;
-    font-size: 18px;
+    border-radius: 12px;
+    font-size: 20px;
     cursor: pointer;
     transition: 0.3s;
+    position: absolute;
 }
 
 #yesBtn {
     background-color: #ff4d6d;
     color: white;
+    left: 20%;
+    bottom: 20px;
 }
 
 #yesBtn:hover {
@@ -54,13 +65,10 @@ button {
 
 #noBtn {
     background-color: #ccc;
-    position: absolute;
-    transition: all 0.2s ease;
-    width: 120px;
-    height: 50px;
-    top: 60%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    bottom: 20px;
+    right: 20%;
+    width: 140px;
+    height: 60px;
 }
 
 .hidden {
@@ -68,17 +76,20 @@ button {
 }
 
 #loveMessage {
-    font-size: 22px;
+    font-size: 26px;
     margin-top: 20px;
     color: #ff4d6d;
 }
 
 .gallery {
     margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 .gallery img {
-    width: 120px;
+    width: 150px;
     margin: 10px;
     border-radius: 15px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
@@ -89,6 +100,7 @@ button {
     top: 0;
     left: 0;
     pointer-events: none;
+    z-index: 1;
 }
 
 .heart {
@@ -111,6 +123,12 @@ button {
     80% { transform: translate(5px, 0); }
     100% { transform: translate(0, 0); }
 }
+
+#thirdBlock {
+    margin-top: 30px;
+    font-size: 24px;
+    color: #ff4d6d;
+}
 </style>
 </head>
 
@@ -130,15 +148,18 @@ button {
             Ты самое прекрасное, что случилось со мной 💕
         </div>
         <div class="gallery" id="gallery">
-            <img src="photo2.jpg">
             <img src="photo1.jpg">
+            <img src="photo2.jpg">
+        </div>
+        <div id="thirdBlock" class="hidden">
+            Навсегда твой, Настюша ❤️<br>
+            Пупсик🤪 любит тебя бесконечно 💕
         </div>
     </div>
 </div>
 
 <div class="hearts" id="hearts"></div>
 
-<!-- Музыка -->
 <audio id="loveSong" loop>
     <source src="music.mp3" type="audio/mpeg">
 </audio>
@@ -148,44 +169,46 @@ const yesBtn = document.getElementById("yesBtn");
 const noBtn = document.getElementById("noBtn");
 const initialBlock = document.getElementById("initialBlock");
 const loveBlock = document.getElementById("loveBlock");
+const thirdBlock = document.getElementById("thirdBlock");
 const hearts = document.getElementById("hearts");
 const loveSong = document.getElementById("loveSong");
 
-let noBtnSize = 120; // начальный размер кнопки
-const colors = ["#ccc", "#f28b82", "#fbbc04", "#34a853", "#4285f4"]; // цвета кнопки
+let noBtnSize = 140;
+const colors = ["#ccc", "#f28b82", "#fbbc04", "#34a853", "#4285f4"];
 
-// Функция движения кнопки "Нет"
 noBtn.addEventListener("mouseover", () => {
     // Уменьшение кнопки
-    noBtnSize = noBtnSize * 0.9;
-    if (noBtnSize < 50) noBtnSize = 50;
+    noBtnSize *= 0.9;
+    if (noBtnSize < 70) noBtnSize = 70;
     noBtn.style.width = noBtnSize + "px";
-    noBtn.style.height = noBtnSize / 2 + "px";
+    noBtn.style.height = (noBtnSize / 2) + "px";
 
-    // Перемещение в пределах окна
-    const x = Math.random() * (window.innerWidth - noBtn.offsetWidth - 20);
-    const y = Math.random() * (window.innerHeight - noBtn.offsetHeight - 20);
+    // Движение внутри контейнера
+    const container = document.getElementById("main");
+    const maxX = container.clientWidth - noBtn.offsetWidth - 20;
+    const maxY = container.clientHeight - noBtn.offsetHeight - 20;
+    const x = Math.random() * maxX;
+    const y = Math.random() * maxY;
     noBtn.style.left = x + "px";
     noBtn.style.top = y + "px";
 
-    // Случайный цвет
-    const color = colors[Math.floor(Math.random() * colors.length)];
-    noBtn.style.backgroundColor = color;
-
-    // Тряска
+    // Цвет и тряска
+    noBtn.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
     noBtn.style.animation = "shake 0.5s";
     setTimeout(() => { noBtn.style.animation = ""; }, 500);
 });
 
-// При нажатии "Да"
+// Нажатие на "Да"
 yesBtn.addEventListener("click", () => {
-    // Скрываем начальный блок
     initialBlock.classList.add("hidden");
-    // Показываем блок любви
     loveBlock.classList.remove("hidden");
+
     startHearts();
     loveSong.play();
-    setTimeout(showFinalMessage, 10000); // 10 секунд
+
+    setTimeout(() => {
+        thirdBlock.classList.remove("hidden");
+    }, 10000); // показываем третий блок через 10 секунд
 });
 
 // Сердечки
@@ -194,21 +217,12 @@ function startHearts() {
         const heart = document.createElement("div");
         heart.classList.add("heart");
         heart.innerHTML = "❤️";
-        heart.style.left = Math.random() * 100 + "vw";
+        heart.style.left = Math.random() * window.innerWidth + "px";
         heart.style.fontSize = (20 + Math.random() * 30) + "px";
         hearts.appendChild(heart);
 
         setTimeout(() => heart.remove(), 4000);
-    }, 300);
-}
-
-// Финальное сообщение
-function showFinalMessage() {
-    loveBlock.innerHTML = `
-        <h1>Навсегда твой, Настюша ❤️</h1>
-        <p>Пупсик🤪 любит тебя бесконечно 💕</p>
-    `;
-    loveSong.pause();
+    }, 100); // увеличено количество сердечек
 }
 </script>
 
