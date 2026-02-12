@@ -105,13 +105,11 @@ button {
             <img src="photo1.jpg">
             <img src="photo2.jpg">
         </div>
+        <div class="gallery" id="newGallery" style="display:none; margin-top:20px; justify-content:center; flex-wrap:wrap;"></div>
     </div>
 
     <!-- Новый блок для показа больших фотографий -->
     <div id="photoShowBlock" class="hidden" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:101;"></div>
-
-    <!-- Галерея новых фотографий под loveBlock -->
-    <div class="gallery" id="newGallery" style="display:none; margin-top:20px; justify-content:center; flex-wrap:wrap;"></div>
 </div>
 
 <div class="hearts" id="hearts"></div>
@@ -129,8 +127,8 @@ const emojis = ["❤️","💝","😘"];
 const photoShowBlock = document.getElementById("photoShowBlock");
 const newGallery = document.getElementById("newGallery");
 const newPhotos = ["new1.jpg","new2.jpg","new3.jpg"];
+const galleryPhotos = ["photo1.jpg","photo2.jpg"]; // исходные фото 2 блока
 
-const noBtnDefault = {left: "auto", right: "20%", bottom: "20px"};
 let noBtnJumps = 0, maxJumps = 4;
 
 // Кнопка "Нет" прыгает максимум 4 раза
@@ -156,7 +154,6 @@ yesBtn.addEventListener("click", ()=>{
     startHearts();
     loveSong.play().catch(()=>console.log("Музыка заблокирована браузером"));
 
-    // через 5 секунд запускаем показ больших фото
     setTimeout(()=>{ showPhotosSequence(); },5000);
 });
 
@@ -169,7 +166,7 @@ function showPhotosSequence(){
         const img = photoShowBlock.querySelector("img");
         setTimeout(()=>{ img.style.opacity = 1; img.style.transform = "scale(1)"; },50);
 
-        let displayTime = (index === newPhotos.length - 1) ? 3000 : 2000; // последняя фото 3 сек
+        let displayTime = (index === newPhotos.length - 1) ? 3000 : 2000;
 
         setTimeout(()=>{
             img.style.opacity = 0; 
@@ -180,16 +177,16 @@ function showPhotosSequence(){
                     showNextPhoto();
                 } else {
                     photoShowBlock.classList.add("hidden");
-                    // Плавное появление галереи под loveBlock
+                    // добавляем все новые фото в подгалерею с эффектом fade-in
                     newGallery.style.display = "flex";
-                    newGallery.innerHTML = ""; // очистка на всякий случай
-                    newPhotos.forEach((src, i) => {
+                    newGallery.innerHTML = ""; 
+                    [...galleryPhotos, ...newPhotos].forEach((src, i) => {
                         const img = document.createElement("img");
                         img.src = src;
                         img.style.opacity = 0;
                         img.style.transition = "opacity 1s ease-in-out";
                         newGallery.appendChild(img);
-                        setTimeout(()=>{ img.style.opacity = 1; }, i * 500); // появление с задержкой
+                        setTimeout(()=>{ img.style.opacity = 1; }, i * 500);
                     });
                 }
             }, 1000);
@@ -219,17 +216,16 @@ noBtn.addEventListener("click", ()=>{
         document.body.appendChild(fake2);
         startManyEmojis(["🫵","🤣","😂","😹"], fake2, 50);
 
-      setTimeout(()=>{
-    fake2.remove();
-    initialBlock.classList.remove("hidden");
-    // Сбрасываем кнопку на исходное место
-    noBtn.style.left = "auto";
-    noBtn.style.top = "auto";
-    noBtn.style.right = "20%";
-    noBtn.style.bottom = "20px";
-    noBtnJumps = 0;
-},5000);
-
+        setTimeout(()=>{
+            fake2.remove();
+            initialBlock.classList.remove("hidden");
+            // Полный сброс кнопки "Нет" на исходное место
+            noBtn.style.left = "auto";
+            noBtn.style.top = "auto";
+            noBtn.style.right = "20%";
+            noBtn.style.bottom = "20px";
+            noBtnJumps = 0;
+        },5000);
     },5000);
 });
 
@@ -269,4 +265,3 @@ function startManyEmojis(arr,parent,count){
 </script>
 </body>
 </html>
-
