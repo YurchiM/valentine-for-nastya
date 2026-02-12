@@ -142,17 +142,16 @@ const initialBlock = document.getElementById("initialBlock");
 const loveBlock = document.getElementById("loveBlock");
 const gallery = document.getElementById("gallery");
 const collageContainer = document.getElementById("collageContainer");
-const hearts = document.getElementById("hearts");
+const mainContainer = document.getElementById("main");
 
 let noBtnJumps = 0, maxJumps = 4;
+const noBtnDefault = {left: "auto", right: "20%", bottom: "20px"};
 
-// Кнопка "Нет" с шуткой
-noBtn.addEventListener("click", ()=>{
-    // Шутка можно добавить здесь
-    alert("Ха-ха, шутка!"); // временный блок
-});
+// Трясущиеся смайлики для шутки
+const firstJokeEmojis = ["😢","😿","😲","😵","😐","😑","🫨","💔"];
+const secondJokeEmojis = ["🫵","🤣","😂","😹"];
 
-// Кнопка "Нет" прыгает максимум 4 раза
+// Кнопка «Нет» прыгает максимум 4 раза
 noBtn.addEventListener("mouseover", ()=>{
     if(noBtnJumps < maxJumps){
         const container = document.getElementById("main");
@@ -168,7 +167,71 @@ noBtn.addEventListener("mouseover", ()=>{
     }
 });
 
-// Кнопка "Да"
+// Функция для создания трясущихся смайликов на экране
+function showEmojis(emojisArray){
+    const created = [];
+    emojisArray.forEach(e=>{
+        for(let i=0;i<10;i++){
+            const span = document.createElement("div");
+            span.className="fakeEmoji";
+            span.innerText=e;
+            span.style.left = Math.random()*80 + "%";
+            span.style.top = Math.random()*80 + "%";
+            mainContainer.appendChild(span);
+            created.push(span);
+        }
+    });
+    return created;
+}
+
+// Убираем смайлики
+function removeEmojis(spans){
+    spans.forEach(s=>s.remove());
+}
+
+// Кнопка «Нет» — шутка
+noBtn.addEventListener("click", ()=>{
+    initialBlock.classList.add("hidden");
+
+    // Первый блок шутки
+    const firstBlock = document.createElement("div");
+    firstBlock.style.fontSize = "32px";
+    firstBlock.style.color = "#ff4d6d";
+    firstBlock.innerText = "Ты серьёзно??";
+    mainContainer.appendChild(firstBlock);
+
+    const emojis1 = showEmojis(firstJokeEmojis);
+
+    setTimeout(()=>{
+        firstBlock.remove();
+        removeEmojis(emojis1);
+
+        // Второй блок шутки
+        const secondBlock = document.createElement("div");
+        secondBlock.style.fontSize = "32px";
+        secondBlock.style.color = "#ff4d6d";
+        secondBlock.innerText = "Ахаххахаха На шо ты надеялась?? У тебя нет такого выбора!";
+        mainContainer.appendChild(secondBlock);
+
+        const emojis2 = showEmojis(secondJokeEmojis);
+
+        setTimeout(()=>{
+            secondBlock.remove();
+            removeEmojis(emojis2);
+
+            // Возвращаем исходный блок
+            initialBlock.classList.remove("hidden");
+            noBtn.style.left = noBtnDefault.left;
+            noBtn.style.right = noBtnDefault.right;
+            noBtn.style.bottom = noBtnDefault.bottom;
+            noBtnJumps = 0;
+
+        },5000);
+
+    },5000);
+});
+
+// Кнопка «Да»
 yesBtn.addEventListener("click", ()=>{
     initialBlock.classList.add("hidden");
     loveBlock.classList.remove("hidden");
@@ -211,7 +274,7 @@ yesBtn.addEventListener("click", ()=>{
             setTimeout(()=>{
                 img.style.opacity = 0;
                 index++;
-                setTimeout(showNextPhoto, 500); // плавный переход к следующему фото
+                setTimeout(showNextPhoto, 500);
             }, 2500);
         }
 
