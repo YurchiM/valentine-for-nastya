@@ -32,6 +32,7 @@ body {
 
 h1 { font-size: 36px; color: #ff4d6d; margin-bottom: 20px; }
 p { font-size: 22px; margin-bottom: 30px; }
+
 button {
     padding: 15px 30px;
     border: none;
@@ -45,9 +46,6 @@ button {
 #yesBtn { background-color: #ff4d6d; color: white; left: 20%; bottom: 20px; }
 #yesBtn:hover { background-color: #e63956; }
 #noBtn { background-color: #ccc; bottom: 20px; right: 20%; width: 140px; height: 60px; }
-
-#musicBtn { position: fixed; top: 20px; right: 20px; padding: 12px 20px; font-size: 18px;
-background: #ff4d6d; color: white; border: none; border-radius: 10px; cursor: pointer; z-index: 999; display: block;}
 
 .hidden { display: none; }
 #loveMessage { font-size: 26px; margin-top: 20px; color: #ff4d6d; }
@@ -66,10 +64,9 @@ background: #ff4d6d; color: white; border: none; border-radius: 10px; cursor: po
 .fakeBlock {
     position: absolute;
     top:0; left:0; width:100%; height:100%;
-    background: #f8d7da;
     display: flex; justify-content: center; align-items: center;
-    flex-direction: column; color: #721c24; font-size: 48px;
-    z-index: 100; text-align: center;
+    flex-direction: column; font-size: 48px;
+    z-index: 100; text-align: center; color: #721c24;
 }
 </style>
 </head>
@@ -96,7 +93,6 @@ background: #ff4d6d; color: white; border: none; border-radius: 10px; cursor: po
 </div>
 
 <div class="hearts" id="hearts"></div>
-<button id="musicBtn">Включить музыку 🎵</button>
 <audio id="loveSong" loop><source src="music.mp3" type="audio/mpeg"></audio>
 
 <script>
@@ -107,69 +103,71 @@ const loveBlock = document.getElementById("loveBlock");
 const thirdBlock = document.getElementById("thirdBlock");
 const hearts = document.getElementById("hearts");
 const loveSong = document.getElementById("loveSong");
-const musicBtn = document.getElementById("musicBtn");
 const emojis = ["❤️","💝","😘"];
-let noBtnJumps = 0; // счетчик прыжков
-const maxJumps = 4;
+const noBtnInitial = {left:noBtn.style.left, top:noBtn.style.top};
+let noBtnJumps = 0, maxJumps = 4;
 
-noBtn.addEventListener("mouseover", () => {
-    if (noBtnJumps < maxJumps) {
+// Кнопка "Нет" прыгает максимум 4 раза, потом стоит
+noBtn.addEventListener("mouseover", ()=>{
+    if(noBtnJumps < maxJumps){
         const container = document.getElementById("main");
         const maxX = container.clientWidth - noBtn.offsetWidth - 20;
         const maxY = container.clientHeight - noBtn.offsetHeight - 20;
-
-        const x = Math.random() * maxX;
-        const y = Math.random() * maxY;
-        noBtn.style.left = x + "px";
-        noBtn.style.top = y + "px";
-
+        noBtn.style.left = Math.random()*maxX + "px";
+        noBtn.style.top = Math.random()*maxY + "px";
         const colors = ["#ccc","#f28b82","#fbbc04","#34a853","#4285f4"];
-        noBtn.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-
+        noBtn.style.backgroundColor = colors[Math.floor(Math.random()*colors.length)];
         noBtn.style.animation = "shake 0.5s";
-        setTimeout(() => { noBtn.style.animation = ""; }, 500);
-
-        noBtnJumps++; // увеличиваем счетчик
+        setTimeout(()=>{noBtn.style.animation="";},500);
+        noBtnJumps++;
     }
 });
 
-// Нажатие на "Да"
+// Кнопка "Да"
 yesBtn.addEventListener("click", ()=>{
     initialBlock.classList.add("hidden");
     loveBlock.classList.remove("hidden");
     startHearts();
-    loveSong.play().catch(()=>musicBtn.style.display="block");
+    loveSong.play().catch(()=>console.log("Музыка заблокирована браузером"));
     setTimeout(()=>{ thirdBlock.classList.remove("hidden"); thirdBlock.classList.add("show"); },10000);
 });
 
-// Нажатие на "Нет" — шутка
+// Кнопка "Нет" — шутка
 noBtn.addEventListener("click", ()=>{
     initialBlock.classList.add("hidden");
-    // 1 блок "Ты серьезно??"
+    
+    // Первый шутливый блок
     const fake1 = document.createElement("div");
     fake1.classList.add("fakeBlock");
     fake1.style.background="#f8d7da";
     fake1.innerHTML = "Ты серьезно??";
     document.body.appendChild(fake1);
     startFakeEmojis(["😢","😿","😲","😵","😐","😑","🫨","💔"], fake1);
+    
     setTimeout(()=>{
         fake1.remove();
-        // 2 блок "ахаххахаха На шо ты надеялась?? У тебя нет такого выбора!"
+        // Второй шутливый блок
         const fake2 = document.createElement("div");
         fake2.classList.add("fakeBlock");
         fake2.style.background="#fff3cd";
         fake2.innerHTML = "ахаххахаха<br>На шо ты надеялась??<br>У тебя нет такого выбора!";
         document.body.appendChild(fake2);
         startFakeEmojis(["🫵","🤣","😂","😹"], fake2);
+        
         setTimeout(()=>{
             fake2.remove();
             // Возврат на главный блок
             initialBlock.classList.remove("hidden");
-        },4000);
-    },3000);
+            // Сбрасываем кнопку "Нет" на изначальное место
+            noBtn.style.left = "auto";
+            noBtn.style.right = "20%";
+            noBtn.style.bottom = "20px";
+            noBtnJumps = 0;
+        },5000);
+    },5000);
 });
 
-// Запуск летающих сердечек
+// Летающие сердечки и смайлы
 function startHearts(){
     setInterval(()=>{
         const heart=document.createElement("div");
@@ -182,7 +180,7 @@ function startHearts(){
     },100);
 }
 
-// Для блока шутки — летающие трясущиеся смайлы
+// Смайлики для блоков шутки
 function startFakeEmojis(arr,parent){
     const interval = setInterval(()=>{
         const e=document.createElement("div");
@@ -191,16 +189,9 @@ function startFakeEmojis(arr,parent){
         e.style.left=Math.random()*parent.clientWidth+"px";
         e.style.fontSize=(30+Math.random()*20)+"px";
         parent.appendChild(e);
-        setTimeout(()=>e.remove(),3000);
+        setTimeout(()=>e.remove(),5000);
     },100);
 }
-
-// Кнопка включения музыки
-musicBtn.addEventListener("click", ()=>{
-    loveSong.play();
-    musicBtn.style.display="none";
-});
 </script>
 </body>
 </html>
-
