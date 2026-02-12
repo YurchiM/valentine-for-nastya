@@ -24,7 +24,7 @@ body {
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     width: 90%;
     max-width: 700px;
-    min-height: 400px;
+    min-height: 450px;
     position: relative;
     text-align: center;
     box-sizing: border-box;
@@ -68,7 +68,7 @@ button {
     border-radius: 10px;
     cursor: pointer;
     z-index: 999;
-    display: block; /* кнопка видна сразу */
+    display: block;
 }
 
 .hidden { display: none; }
@@ -122,7 +122,6 @@ button {
 #thirdBlock { margin-top: 30px; font-size: 24px; color: #ff4d6d; }
 </style>
 </head>
-
 <body>
 
 <div class="container" id="main">
@@ -138,8 +137,8 @@ button {
             Я тебя люблю, Милая 🤍<br>Ты самое прекрасное, что случилось со мной 💕
         </div>
         <div class="gallery" id="gallery">
-            <img src="photo2.jpg">
             <img src="photo1.jpg">
+            <img src="photo2.jpg">
         </div>
         <div id="thirdBlock" class="fade-in hidden">
             Навсегда твой, Настюша ❤️<br>Пупсик🤪 любит тебя бесконечно 💕
@@ -164,75 +163,57 @@ const hearts = document.getElementById("hearts");
 const loveSong = document.getElementById("loveSong");
 const musicBtn = document.getElementById("musicBtn");
 
-let noBtnSize = 140;
-const colors = ["#ccc", "#f28b82", "#fbbc04", "#34a853", "#4285f4"];
-const emojis = ["❤️", "💝", "😘"];
+const emojis = ["❤️","💝","😘"];
 
-// Кнопка "Нет" бегает внутри контейнера
-// Кнопка "Нет" бегает внутри контейнера и меняет цвет
+// Кнопка "Нет" бегает и меняет цвет, размер фиксирован
 noBtn.addEventListener("mouseover", () => {
-    // Размер кнопки фиксированный
-    noBtn.style.width = "140px";
-    noBtn.style.height = "60px";
-
-    // Получаем границы контейнера
     const container = document.getElementById("main");
     const maxX = container.clientWidth - noBtn.offsetWidth - 20;
     const maxY = container.clientHeight - noBtn.offsetHeight - 20;
-
-    // Случайная позиция внутри контейнера
     const x = Math.random() * maxX;
     const y = Math.random() * maxY;
     noBtn.style.left = x + "px";
     noBtn.style.top = y + "px";
 
-    // Случайный цвет кнопки
     const colors = ["#ccc", "#f28b82", "#fbbc04", "#34a853", "#4285f4"];
-    noBtn.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    noBtn.style.backgroundColor = colors[Math.floor(Math.random()*colors.length)];
 
-    // Эффект тряски
     noBtn.style.animation = "shake 0.5s";
-    setTimeout(() => { noBtn.style.animation = ""; }, 500);
+    setTimeout(()=>{noBtn.style.animation = "";},500);
 });
 
-
-// Нажатие на "Да"
-yesBtn.addEventListener("click", () => {
+// Кнопка "Да" открывает второй блок и запускает музыку
+yesBtn.addEventListener("click", ()=>{
     initialBlock.classList.add("hidden");
     loveBlock.classList.remove("hidden");
     startHearts();
 
-    // Попытка включить музыку
-    loveSong.play().catch(() => {
-        // Если блокировка, оставляем кнопку включения видимой
-        musicBtn.style.display = "block";
-    });
+    loveSong.play().catch(()=>musicBtn.style.display="block");
 
-    setTimeout(() => {
+    setTimeout(()=>{
         thirdBlock.classList.remove("hidden");
         thirdBlock.classList.add("show");
-    }, 10000);
+    },10000);
 });
 
-// Кнопка ручного включения музыки
-musicBtn.addEventListener("click", () => {
+// Ручное включение музыки
+musicBtn.addEventListener("click", ()=>{
     loveSong.play();
-    musicBtn.style.display = "none";
+    musicBtn.style.display="none";
 });
 
 // Летающие сердечки и смайлы
-function startHearts() {
-    setInterval(() => {
+function startHearts(){
+    setInterval(()=>{
         const heart = document.createElement("div");
         heart.classList.add("heart");
-        heart.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
-        heart.style.left = Math.random() * window.innerWidth + "px";
-        heart.style.fontSize = (20 + Math.random() * 30) + "px";
+        heart.innerHTML = emojis[Math.floor(Math.random()*emojis.length)];
+        heart.style.left = Math.random()*window.innerWidth + "px";
+        heart.style.fontSize = (20+Math.random()*30)+"px";
         hearts.appendChild(heart);
-        setTimeout(() => heart.remove(), 4000);
-    }, 100);
+        setTimeout(()=>heart.remove(),4000);
+    },100);
 }
 </script>
 </body>
 </html>
-
